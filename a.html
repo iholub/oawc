@@ -6,63 +6,75 @@
 	<script src="jquery.js"></script>
     <script type="text/javascript">
 	
-    var polling = false;
+    var startPolling = false;
+	var polling = false;
 	
 $( document ).ready(function() {
-    console.log( "ready!" );
+    log( "ready!" );
 	
 $("body" ).keydown(function( e ) {
 var code = e.which;
-console.log("keydown1 " + code);
   if ( code == 13 ) {
    e.preventDefault();
   }
  if (code == 87) {
- 	console.log("aaaaaaaaaaaa ");
-    polling = true;
-    poll();
+ 	//log("w");
+    startPoll();
   }
   return true;
 });
 
 $("body" ).keyup(function( e ) {
 var code = e.which;
-console.log("keyup " + code);
   if (code == 13 ) {
    e.preventDefault();
   }
   if (code == 87) {
-    polling = false;
+  log("u");
+    startPolling = false;
   }
   return true;
 });
 	
 });
 	
-	var running = false;
+//	var running = false;
+	
+	function startPoll() {
+	    if (polling) {
+			return;
+		}
+	    startPolling = true;
+		poll();
+	}
 	
 	var poll = function() {
-	//console.log("polling");
-	if (running) {
-		return;
-	}
-	running = true;
+	log("p");
+	    polling = true;
+		if (!startPolling) {
+			return;
+		}
+//	running = true;
     $.ajax({
         url: "http://google.com",
         type: "GET",
         success: function(data) {
-            //console.log("!!!");
+            
         },
         dataType: "html",
         complete: function() {
-		running = false;
-		    if (polling) {
-					setTimeout(function() {poll()}, 1000);
+		    log("c");
+		    //running = false;
+		    if (startPolling) {
+			    setTimeout(function() {poll()}, 1000);
 			}
 		},
-        timeout: 1000
     })
 };
+
+function log(str) {
+	$("#log").append(str);
+}
 
    </script>
 </head>
@@ -79,6 +91,9 @@ console.log("keyup " + code);
         </td>
     </tr>
 </table>
+
+<div id="log">
+</div>
 
 </body>
 </html>
