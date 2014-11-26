@@ -8,19 +8,28 @@
 	
 	var frequency = 200;
 	var polling = false;
+	var cmd;
 
 //	var running = false;
 	
 	var doKeyDown = function(e) {
 	var code = e.which;
-  if ( code == 13 ) {
-   e.preventDefault();
-  }
- if (code == 87) {
- 	//log("w");
-	polling = true;
-    poll();
-  }
+    if ( code == 13 ) {
+       e.preventDefault();
+    }
+    //log("-" + code + "-");
+	var valid = false;
+	 if (code == 87) {
+		cmd = "h";
+		valid = true;
+	  } else if (code == 83) {
+		cmd = "l";
+		valid = true;
+	  }
+	  if (valid) {
+		polling = true;
+		poll();
+	  }
   return true;
 	}
 	
@@ -29,10 +38,16 @@ var code = e.which;
   if (code == 13 ) {
    e.preventDefault();
   }
+  var valid = false;
   if (code == 87) {
-  log("u");
-    polling = false;
+    valid = true;
+  } else if (code == 83) {
+	valid = true;
   }
+	if (valid) {
+	  log("u");
+	  polling = false;
+	}
   return true;	
     }	
 	
@@ -50,7 +65,7 @@ function doReq() {
 	var startTime = new Date().getTime();
 	requesInProgress = true;
     $.ajax({
-        url: "cgi-bin/ser.cgi?cmd=" + "lllll",
+        url: "cgi-bin/ser.cgi?" + cmd,
         type: "GET",
         dataType: "html",
 		cache: false,
