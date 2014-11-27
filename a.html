@@ -6,10 +6,71 @@
 	<script src="jquery.js"></script>
     <script type="text/javascript">
 	
+	var Cmd = function (code) {
+	   //this.code = code;
+       this.down = false;
+    };
+	
+	var KEY_UP = 87;
+	var KEY_DOWN = 83;
+	var KEY_LEFT = 65;
+	var KEY_RIGHT = 68;
+	
+	var cmdMap = {};
+	cmdMap[KEY_UP] = new Cmd();
+	cmdMap[KEY_DOWN] = new Cmd();
+	cmdMap[KEY_LEFT] = new Cmd();
+	cmdMap[KEY_RIGHT] = new Cmd();
+	
+	function buildCmd() {
+	   var u = cmdMap[KEY_UP].down;
+	   var d = cmdMap[KEY_DOWN].down;
+	   var l = cmdMap[KEY_LEFT].down;
+	   var r = cmdMap[KEY_RIGHT].down;
+	   if (u) {
+    	   if (l) {
+			return "f000f255z";
+	       } else if (r) {
+		    return "f255f000z";
+	       } else {
+		     return "f255f255z";
+		   }
+	   } else if (d) {
+    	   if (l) {
+    		   return "b000b255z";
+	       } else if (r) {
+			   return "b255b000z";		    
+	       } else {
+		     return "b255b255z";
+		   }
+	   } else if (l) {
+			return "b255f255z";
+	   }  else if (r) {
+			return "f255b255z";
+	   }
+	}
+
+
+//	[new Cmd(87),
+//	  new Cmd(83),
+//	  new Cmd(65),
+//	  new Cmd(68)];
+
+/*	
+	function codeInCmdList(code) {
+	    return (code in cmdMap);
+		for (i = 0; i < cmdList.length; i++) { 
+			if (cmdList[i] == code) {
+			   return true;
+			};
+		}
+		return false;
+	}
+*/
 	var frequency = 200;
 	var polling = false;
 	var cmd;
-
+	
 //	var running = false;
 	
 	var doKeyDown = function(e) {
@@ -17,33 +78,32 @@
     if ( code == 13 ) {
        e.preventDefault();
     }
-    //log("-" + code + "-");
+    log("-" + code + "-");
 	var valid = false;
-	 if (code == 87) {
-		cmd = "h";
+	if (code in cmdMap) {
+		var command = cmdMap[code];
+		command.down = true;
 		valid = true;
-	  } else if (code == 83) {
-		cmd = "l";
-		valid = true;
-	  }
-	  if (valid) {
+	}
+	
+   if (valid) {
 		polling = true;
 		poll();
 	  }
-  return true;
+      return true;
 	}
 	
 	var doKeyUp = function(e) {
-var code = e.which;
-  if (code == 13 ) {
-   e.preventDefault();
-  }
-  var valid = false;
-  if (code == 87) {
-    valid = true;
-  } else if (code == 83) {
-	valid = true;
-  }
+       var code = e.which;
+         if (code == 13 ) {
+        e.preventDefault();
+          }
+    var valid = false;
+	if (code in cmdMap) {
+		var command = cmdMap[code];
+		command.down = false;
+		valid = true;
+	}
 	if (valid) {
 	  log("u");
 	  polling = false;
@@ -56,12 +116,13 @@ var code = e.which;
 	if (!requesInProgress) {
 		doReq();
 	}
-//	running = true;
-};
+     };
 
 var requesInProgress = false;
 
 function doReq() {
+    var cmd = buildCmd();
+	$("#cmd").html(cmd);
 	var startTime = new Date().getTime();
 	requesInProgress = true;
     $.ajax({
@@ -120,6 +181,9 @@ $( document ).ready(function() {
         </td>
     </tr>
 </table>
+
+cmd: <div id="cmd"></div>
+<br/>
 
 latency: <div id="latency"></div>
 <br/>
