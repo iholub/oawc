@@ -29,24 +29,24 @@
 	   var r = cmdMap[KEY_RIGHT].down;
 	   if (u) {
     	   if (l) {
-			return "f000f255z";
+			return "f000f150z";
 	       } else if (r) {
-		    return "f255f000z";
+		    return "f150f000z";
 	       } else {
-		     return "f255f255z";
+		     return "f150f150z";
 		   }
 	   } else if (d) {
     	   if (l) {
-    		   return "b000b255z";
+    		   return "b000b150z";
 	       } else if (r) {
-			   return "b255b000z";		    
+			   return "b150b000z";		    
 	       } else {
-		     return "b255b255z";
+		     return "b150b150z";
 		   }
 	   } else if (l) {
-			return "b255f255z";
+			return "b150f150z";
 	   }  else if (r) {
-			return "f255b255z";
+			return "f150b150z";
 	   }
 	}
 
@@ -78,7 +78,7 @@
     if ( code == 13 ) {
        e.preventDefault();
     }
-    log("-" + code + "-");
+    //log("-" + code + "-");
 	var valid = false;
 	if (code in cmdMap) {
 		var command = cmdMap[code];

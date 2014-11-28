@@ -17,5 +17,12 @@ echo "<br/>"
 cmd=${QUERY_STRING%%&*}
 echo "$cmd"
 echo "<br/>"
-echo "$cmd" > /dev/ttyUSB0
+echo -n "$cmd" > /dev/ttyUSB0
 
+#echo "<br/>"
+#echo "Serial settings: "
+#SERIAL_SETTINGS="$(stty -F /dev/ttyUSB0 -a)"
+#echo "$SERIAL_SETTINGS"
+
+echo "<br/>"
+echo "end"
