@@ -176,8 +176,14 @@ $( document ).ready(function() {
    </script>
 </head>
 <body>
-<table >
+cmd: <span id="cmd"></span>
+latency: <span id="latency"></span>
+<p>
+<img id="camera" src="http://192.168.2.50:8080/?action=stream"/>
+<p/>
 
+
+<table >
     <tr>
         <td>
 		<button type="button" >Forward</button><br>
@@ -188,12 +194,6 @@ $( document ).ready(function() {
         </td>
     </tr>
 </table>
-
-cmd: <div id="cmd"></div>
-<br/>
-
-latency: <div id="latency"></div>
-<br/>
 
 <div id="log">
 </div>
