@@ -15,6 +15,7 @@
 	var KEY_DOWN = 83;
 	var KEY_LEFT = 65;
 	var KEY_RIGHT = 68;
+	var needstop = false;
 	
 	var cmdMap = {};
 	cmdMap[KEY_UP] = new Cmd();
@@ -47,6 +48,8 @@
 			return "b150f150z";
 	   }  else if (r) {
 			return "f150b150z";
+	   } else {
+			return "f000f000z";
 	   }
 	}
 
@@ -105,15 +108,17 @@
 		valid = true;
 	}
 	if (valid) {
-	  log("u");
-	  polling = false;
+		polling = true;
+		poll();
+	    //polling = false;
 	}
   return true;	
     }	
 	
 	var poll = function() {
-	log("p");
+	//log("p");
 	if (!requesInProgress) {
+		requesInProgress = true;
 		doReq();
 	}
      };
@@ -122,9 +127,11 @@ var requesInProgress = false;
 
 function doReq() {
     var cmd = buildCmd();
+	if (cmd == "f000f000z") {
+		polling = false;
+	}
 	$("#cmd").html(cmd);
 	var startTime = new Date().getTime();
-	requesInProgress = true;
     $.ajax({
         url: "cgi-bin/ser.cgi?" + cmd,
         type: "GET",
@@ -132,7 +139,7 @@ function doReq() {
 		cache: false,
 		timeout: 1000,
         success: function() {
-            log("s");
+            //log("s");
         },
         complete: function() {
 			requesInProgress = false;
@@ -149,7 +156,7 @@ function doReq() {
 			$("#latency").html(latency);
 		},
         error: function() {
-            log("e");
+            //log("e");
         },
     })
 }
@@ -159,7 +166,7 @@ function log(str) {
 }
 
 $( document ).ready(function() {
-    log( "ready!" );
+    //log( "ready!" );
 	
 	$("body" ).keydown(doKeyDown);
 	$("body" ).keyup(doKeyUp);
