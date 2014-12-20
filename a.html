@@ -6,11 +6,19 @@
 	<script src="jquery.js"></script>
     <script type="text/javascript">
 	
+	var SPEED_MAX = 255;
+	var SPEED_DEFAULT = 255;
+	var speedStr = "255";
+	var SPEED_MIN = 0;
+	var speed = SPEED_DEFAULT;
+	
 	var Cmd = function (code) {
 	   //this.code = code;
        this.down = false;
     };
 	
+	var SPEED_UP = 81;
+	var SPEED_DOWN = 69;
 	var KEY_UP = 38;
 	var KEY_DOWN = 40;
 	var KEY_LEFT = 37;
@@ -21,6 +29,10 @@
 	var M_KEY_RIGHT = 68;
 	var needstop = false;
 	
+	var cmdSpeedMap = {};
+	cmdSpeedMap[SPEED_UP] = new Cmd();
+	cmdSpeedMap[SPEED_DOWN] = new Cmd();
+
 	var cmdMap = {};
 	cmdMap[M_KEY_UP] = new Cmd();
 	cmdMap[M_KEY_DOWN] = new Cmd();
@@ -31,6 +43,41 @@
 	cmdMap[KEY_LEFT] = new Cmd();
 	cmdMap[KEY_RIGHT] = new Cmd();
 	
+	var speedUpdateRunning = false;
+	var speedUpdateTimer;
+	function updateSpeed() {
+	   var u = cmdSpeedMap[SPEED_UP].down;
+	   var d = cmdSpeedMap[SPEED_DOWN].down;
+	   if (u || d) {
+			if (speedUpdateRunning) {
+			return;
+			}
+			speedUpdateRunning = true;
+			if (u) {
+				inc = 5;
+			} else {
+				inc = -5;
+			}
+			speedUpdateTimer = setInterval(function(){
+				speed += inc;
+				if (speed > SPEED_MAX) {
+					speed = SPEED_MAX;
+				}
+				if (speed < SPEED_MIN) {
+					speed = SPEED_MIN;
+				}
+				speedStr = pad(speed, 3);
+				$("#speed").html(speedStr);
+			}, 50);
+			return;
+	   }
+	   speedUpdateRunning = false;
+       clearInterval(speedUpdateTimer);
+	}
+	function pad(num, size) {
+		var s = "00" + num;
+		return s.substr(s.length-size);
+	}
 	function buildCmd() {
 	   var res = "";
 	   var u = cmdMap[M_KEY_UP].down;
@@ -39,24 +86,24 @@
 	   var r = cmdMap[M_KEY_RIGHT].down;
 	   if (u) {
     	   if (l) {
-			res = "mf000f150z";
+			res = "mf000f" + speedStr + "z";
 	       } else if (r) {
-		    res = "mf150f000z";
+		    res = "mf" + speedStr + "f000z";
 	       } else {
-		     res = "mf150f150z";
+		     res = "mf" + speedStr + "f" + speedStr + "z";
 		   }
 	   } else if (d) {
     	   if (l) {
-    		   res = "mb000b150z";
+    		   res = "mb000b" + speedStr + "z";
 	       } else if (r) {
-			   res = "mb150b000z";		    
+			   res = "mb" + speedStr + "b000z";		    
 	       } else {
-		     res = "mb150b150z";
+		     res = "mb" + speedStr + "b" + speedStr + "z";
 		   }
 	   } else if (l) {
-			res = "mb150f150z";
+			res = "mb" + speedStr + "f" + speedStr + "z";
 	   }  else if (r) {
-			res = "mf150b150z";
+			res = "mf" + speedStr + "b" + speedStr + "z";
 	   } else {
 			res = "mf000f000z";
 	   }
@@ -96,7 +143,7 @@
 		return false;
 	}
 */
-	var frequency = 100;
+	var frequency = 20;
 	var polling = false;
 	var cmd;
 	
@@ -113,6 +160,10 @@
 		var command = cmdMap[code];
 		command.down = true;
 		valid = true;
+	} else if (code in cmdSpeedMap) {
+		var command = cmdSpeedMap[code];
+		command.down = true;
+		updateSpeed();
 	}
 	
    if (valid) {
@@ -132,6 +183,10 @@
 		var command = cmdMap[code];
 		command.down = false;
 		valid = true;
+	} else if (code in cmdSpeedMap) {
+		var command = cmdSpeedMap[code];
+		command.down = false;
+		updateSpeed();
 	}
 	if (valid) {
 		polling = true;
@@ -204,6 +259,7 @@ $( document ).ready(function() {
 <body>
 cmd: <span id="cmd"></span>
 latency: <span id="latency"></span>
+speed: <span id="speed"></span>
 <p>
 <img id="camera" src="http://192.168.2.50:8080/?action=stream"/>
 <p/>
