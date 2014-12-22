@@ -5,7 +5,7 @@
     <title>Wi-fi controlled car with camera</title>
 	<script src="jquery.js"></script>
     <script type="text/javascript">
-	
+	var showInfo = false;
 	var SPEED_MAX = 255;
 	var SPEED_DEFAULT = 255;
 	var speedStr = "255";
@@ -123,6 +123,9 @@
 	   if (r) {
 		res += "h0z";
 	   }
+	   if(showInfo) {
+		res += "iz";
+	   }
 	   return res;
 	}
 
@@ -208,7 +211,7 @@ var requesInProgress = false;
 
 function doReq() {
     var cmd = buildCmd();
-	if (cmd == "mf000f000z") {
+	if (cmd == "mf000f000z" || cmd == "mf000f000ziz") {
 		polling = false;
 	}
 	$("#cmd").html(cmd);
@@ -218,7 +221,7 @@ function doReq() {
         type: "GET",
         dataType: "html",
 		cache: false,
-		timeout: 1000,
+		timeout: 5000,
         success: function() {
             //log("s");
         },
@@ -252,13 +255,16 @@ $( document ).ready(function() {
 	$("body" ).keydown(doKeyDown);
 	$("body" ).keyup(doKeyUp);
 	
+	$('#showInfo').change(function() {
+        showInfo = $(this).is(":checked");
+    });
 });
 
    </script>
 </head>
 <body>
 cmd: <span id="cmd"></span>
-latency: <span id="latency"></span>
+latency: <span id="latency"></span> <input type="checkbox" id="showInfo"/>show info
 speed: <span id="speed"></span>
 <p>
 <img id="camera" src="http://192.168.2.50:8080/?action=stream"/>

@@ -18,8 +18,9 @@ cmd=${QUERY_STRING%%&*}
 echo "$cmd"
 echo "<br/>"
 echo -n "$cmd" > /dev/ttyUSB0
-
-#echo "<br/>"
+echo "<br/>"
+#resp="$(head -c 30 /dev/ttyUSB0)"
+#echo "v: $resp e"
 #echo "Serial settings: "
 #SERIAL_SETTINGS="$(stty -F /dev/ttyUSB0 -a)"
 #echo "$SERIAL_SETTINGS"
