@@ -11,7 +11,7 @@ if  ! [ -f /tmp/isrunning ]; then
       while [ 1 ]; do                        
               if [ -c /dev/ttyUSB0 ]; then
                       head -n 1 /dev/ttyUSB0 >/tmp/volts
-                      sleep 1         
+                      #sleep 1         
               else
                       # USB dissapeared. 
                       echo "Arduino no longer attached" >/tmp/volts
