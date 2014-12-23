@@ -18,20 +18,13 @@ cmd=${QUERY_STRING%%&*}
 echo "$cmd"
 echo "<br/>"
 
-#head -n 1 /dev/ttyUSB0 >/tmp/volts &
-#bgPid=$!
-#echo "pid: $bgPid"
 echo -n "$cmd" > /dev/ttyUSB0
-#infoStr=$(cat /tmp/volts)
-#echo "infoStr: $infoStr"
-#kill $bgPid
-echo ""
-#echo "<br/>"
-#resp="$(head -c 30 /dev/ttyUSB0)"
-#echo "v: $resp e"
-#echo "Serial settings: "
-#SERIAL_SETTINGS="$(stty -F /dev/ttyUSB0 -a)"
-#echo "$SERIAL_SETTINGS"
 
-#echo "<br/>"
-#echo "end"
+#while [ 1 ]; do
+#	if  ! [ -f /var/ardresprunning ]; then	 
+#		break;
+#	fi
+#done
+#echo "infoStr: $(cat /var/ardresp)"
+#rm /var/ardresp
+echo ""
