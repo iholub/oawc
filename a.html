@@ -5,6 +5,7 @@
     <title>Wi-fi controlled car with camera</title>
 	<script src="jquery.js"></script>
     <script type="text/javascript">
+	var cgiUrl = "cgi-bin/lua.cgi?";
 	var showInfo = false;
 	var SPEED_MAX = 255;
 	var SPEED_DEFAULT = 255;
@@ -217,7 +218,7 @@ function doReq() {
 	$("#cmd").html(cmd);
 	var startTime = new Date().getTime();
     $.ajax({
-        url: "cgi-bin/ser.cgi?" + cmd,
+        url: cgiUrl + cmd,
         type: "GET",
         dataType: "html",
 		cache: false,
