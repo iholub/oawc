@@ -8,14 +8,21 @@ local function main()
 	i, j = string.find(qs, "&")
 	cmd = string.sub(qs, 1, j - 1)
 	print(cmd)
+	print(math.modf(os.clock()))
 	wserial=io.open("/dev/ttyUSB0","w")
+	print(math.modf(os.clock()))
+  
 	wserial:write(cmd)
+	print(math.modf(os.clock()))
 	wserial:flush()
+	print(math.modf(os.clock()))
 	rserial=io.open("/dev/ttyUSB0","r")
+	print(math.modf(os.clock()))
 	while chaine==nil do
         chaine=rserial:read()
         rserial:flush()
 	end
+	print(math.modf(os.clock()))
 	print("response: ")
 	print(chaine)
 end
