@@ -224,7 +224,8 @@ function doReq() {
         dataType: "html",
 		cache: false,
 		timeout: 5000,
-        success: function() {
+        success: function(data, textStatus, jqXHR) {
+			$("#resp").html(data);
             //log("s");
         },
         complete: function() {
@@ -268,6 +269,7 @@ $( document ).ready(function() {
 cmd: <span id="cmd"></span>
 latency: <span id="latency"></span> <input type="checkbox" id="showInfo"/>show info
 speed: <span id="speed"></span>
+<pre id="resp"></pre>
 <p>
 <img id="camera" src="http://192.168.2.50:8080/?action=stream"/>
 <p/>
