@@ -87,46 +87,47 @@
 	   var r = cmdMap[M_KEY_RIGHT].down;
 	   if (u) {
     	   if (l) {
-			res = "mf000f" + speedStr + "z";
+			res = "mf000f" + speedStr;
 	       } else if (r) {
-		    res = "mf" + speedStr + "f000z";
+		    res = "mf" + speedStr + "f000";
 	       } else {
-		     res = "mf" + speedStr + "f" + speedStr + "z";
+		     res = "mf" + speedStr + "f" + speedStr;
 		   }
 	   } else if (d) {
     	   if (l) {
-    		   res = "mb000b" + speedStr + "z";
+    		   res = "mb000b" + speedStr;
 	       } else if (r) {
-			   res = "mb" + speedStr + "b000z";		    
+			   res = "mb" + speedStr + "b000";		    
 	       } else {
-		     res = "mb" + speedStr + "b" + speedStr + "z";
+		     res = "mb" + speedStr + "b" + speedStr;
 		   }
 	   } else if (l) {
-			res = "mb" + speedStr + "f" + speedStr + "z";
+			res = "mb" + speedStr + "f" + speedStr;
 	   }  else if (r) {
-			res = "mf" + speedStr + "b" + speedStr + "z";
+			res = "mf" + speedStr + "b" + speedStr;
 	   } else {
-			res = "mf000f000z";
+			res = "mf000f000";
 	   }
 	   var u = cmdMap[KEY_UP].down;
 	   var d = cmdMap[KEY_DOWN].down;
 	   var l = cmdMap[KEY_LEFT].down;
 	   var r = cmdMap[KEY_RIGHT].down;
 	   if (u) {
-		res += "v0z";
+		res += "v0";
 	   }
 	   if (d) {
-		res += "v1z";
+		res += "v1";
 	   }
 	   if (l) {
-		res += "h1z";
+		res += "h1";
 	   }
 	   if (r) {
-		res += "h0z";
+		res += "h0";
 	   }
 	   if(showInfo) {
-		res += "iz";
+		res += "i";
 	   }
+	   res += "z";
 	   return res;
 	}
 
@@ -212,7 +213,7 @@ var requesInProgress = false;
 
 function doReq() {
     var cmd = buildCmd();
-	if (cmd == "mf000f000z" || cmd == "mf000f000ziz") {
+	if (cmd == "mf000f000z" || cmd == "mf000f000iz") {
 		polling = false;
 	}
 	$("#cmd").html(cmd);
