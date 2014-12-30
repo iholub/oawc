@@ -79,12 +79,14 @@
 		var s = "00" + num;
 		return s.substr(s.length-size);
 	}
+	var driving = false;
 	function buildCmd() {
 	   var res = "";
 	   var u = cmdMap[M_KEY_UP].down;
 	   var d = cmdMap[M_KEY_DOWN].down;
 	   var l = cmdMap[M_KEY_LEFT].down;
 	   var r = cmdMap[M_KEY_RIGHT].down;
+	   var drivingNew = u || d || l || r;
 	   if (u) {
     	   if (l) {
 			res = "mf000f" + speedStr;
@@ -106,8 +108,11 @@
 	   }  else if (r) {
 			res = "mf" + speedStr + "b" + speedStr;
 	   } else {
-			res = "mf000f000";
+			if (driving) {
+				res = "mf000f000";
+			}
 	   }
+		driving = drivingNew;
 	   var u = cmdMap[KEY_UP].down;
 	   var d = cmdMap[KEY_DOWN].down;
 	   var l = cmdMap[KEY_LEFT].down;
@@ -124,9 +129,9 @@
 	   if (r) {
 		res += "h0";
 	   }
-	   if(showInfo) {
+	   
 		res += "i";
-	   }
+	   
 	   res += "z";
 	   return res;
 	}
@@ -172,6 +177,7 @@
 	}
 	
    if (valid) {
+		
 		polling = true;
 		poll();
 	  }
@@ -202,6 +208,7 @@
     }	
 	
 	var poll = function() {
+	console.log("poll");
 	//log("p");
 	if (!requesInProgress) {
 		requesInProgress = true;
@@ -212,11 +219,21 @@
 var requesInProgress = false;
 
 function doReq() {
+console.log("doReq");
     var cmd = buildCmd();
-	if (cmd == "mf000f000z" || cmd == "mf000f000iz") {
+	console.log(cmd);
+	if (cmd == "iz") {
 		polling = false;
+		pingStart();
+		return;
 	}
 	$("#cmd").html(cmd);
+	pingStop();
+	doAjax(cmd);
+}
+
+
+function doAjax(cmd) {
 	var startTime = new Date().getTime();
     $.ajax({
         url: cgiUrl + cmd,
@@ -229,24 +246,90 @@ function doReq() {
             //log("s");
         },
         complete: function() {
-			requesInProgress = false;
+		console.log("complete");
+					requesInProgress = false;
+
 			var endTime = new Date().getTime();
 			var latency = endTime - startTime;
+			$("#latency").html(latency);
 		    if (polling) {
+				pingStop();
      			var nextRun = frequency - latency;
 	    		if (nextRun > 0) {
 					setTimeout(poll, nextRun);
 		    	} else {
 					poll();
 				}
+			} else {
+				pingStart();
 			}
-			$("#latency").html(latency);
+
 		},
         error: function() {
             //log("e");
         },
     })
 }
+
+var pinging = false;
+var pingInProgress = false;
+var doPingInfo=function() {
+	if (!pinging) {
+		return;
+	}
+	
+	pingInProgress = true;
+	var startTime = new Date().getTime();
+	var cmd = "iz";
+	
+    $.ajax({
+        url: cgiUrl + cmd,
+        type: "GET",
+        dataType: "html",
+		cache: false,
+		timeout: 5000,
+        success: function(data, textStatus, jqXHR) {
+			$("#resp").html(data);
+            //log("s");
+        },
+        complete: function() {
+		pingInProgress = false;
+		
+			var endTime = new Date().getTime();
+			var latency = endTime - startTime;
+			$("#latency").html(latency);
+			
+			if (pinging) {
+				var nextRun = 1000 - latency;
+				if (nextRun > 0) {
+					setTimeout(doPingInfo, nextRun);
+				} else {
+					doPingInfo();
+				}
+			}
+   			
+    		
+		},
+        error: function() {
+            //log("e");
+        },
+    })
+};
+
+function pingStart(){
+	console.log("pingStart");
+	pinging = true;
+	if (pingInProgress) {
+		return;
+	}
+	setTimeout(doPingInfo, 1000);
+}
+
+function pingStop(){
+console.log("pingStop");
+	pinging = false;
+}
+
 
 function log(str) {
 	$("#log").append(str);
@@ -261,6 +344,8 @@ $( document ).ready(function() {
 	$('#showInfo').change(function() {
         showInfo = $(this).is(":checked");
     });
+	
+	pingStart();
 });
 
    </script>
