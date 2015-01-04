@@ -241,7 +241,7 @@
 
                     var endTime = new Date().getTime();
                     var latency = endTime - startTime;
-                    $("#latency").html(latency);
+					updateLatency(latency);
                     if (polling) {
                         pingStop();
                         var nextRun = frequency - latency;
@@ -289,8 +289,7 @@
 
                     var endTime = new Date().getTime();
                     var latency = endTime - startTime;
-                    $("#latency").html(latency);
-
+					updateLatency(latency)
                     if (pinging) {
                         var nextRun = pingFrequency - latency;
                         console.log(nextRun);
@@ -321,6 +320,22 @@
             pinging = false;
         }
 
+		var latencyCmdCount = 5;
+		var latencySum = 0;
+		var latencyList = new Array();
+		
+		function updateLatency(latency) {
+			latencyList.push(latency);
+			latencySum += latency;
+			var arrLength = latencyList.length;
+			if (arrLength > latencyCmdCount) {
+				latencySum -= latencyList.shift();
+			}
+			var avgLatency = latencySum / arrLength;
+            $("#latency").html(latency);
+			$("#avg_latency").html(avgLatency);
+
+		}
 
         function log(str) {
             $("#log").append(str);
@@ -336,16 +351,35 @@
                 showInfo = $(this).is(":checked");
             });
 
+			$("#speed").html(speedStr);
+			
             pingStart();
         });
 
     </script>
 </head>
 <body>
-cmd: <span id="cmd"></span>
-latency: <span id="latency"></span> <input type="checkbox" id="showInfo"/>show info
-speed: <span id="speed"></span>
-<pre id="resp"></pre>
+<input type="checkbox" id="idlePing"/>Ping while idle
+<table border="0">
+<tr>
+	<td>cmd:</td><td><span id="cmd"></span></td>
+</tr>
+<tr>
+	<td>latency:</td><td><span id="latency"></span></td>
+</tr>
+<tr>
+	<td>avg latency:</td><td><span id="avg_latency"></span></td>
+</tr>
+<tr>
+	<td>drive speed:</td><td><span id="speed"></span></td>
+</tr>
+<tr>
+	<td>servo speed:</td><td><span id="servo_speed"></span></td>
+</tr>
+<tr>
+	<td>response:</td><td><pre id="resp"></pre></td>
+</tr>
+</table>
 <p>
     <img id="camera" src="http://192.168.2.50:8080/?action=stream"/>
 
