@@ -4,6 +4,7 @@
 <head>
     <title>Wi-fi controlled car with camera</title>
     <script src="jquery.js"></script>
+	<script src="ping.js"></script>
     <script type="text/javascript">
         var cgiUrl = "cgi-bin/lua.cgi?";
         var ajax_request;
@@ -156,7 +157,6 @@
          }
          */
         var frequency = 20;
-        var pingFrequency = 7000;
         var polling = false;
         var cmd;
 
@@ -213,11 +213,11 @@
             var cmd = buildCmd();
             if (cmd == "iz") {
                 polling = false;
-                pingStart();
+                PING.pingStart();
                 return;
             }
             $("#cmd").html(cmd);
-            pingStop();
+            PING.pingStop();
             cmdInProgress = true;
             doAjax(cmd);
         };
@@ -243,7 +243,7 @@
                     var latency = endTime - startTime;
 					updateLatency(latency);
                     if (polling) {
-                        pingStop();
+                        PING.pingStop();
                         var nextRun = frequency - latency;
                         if (nextRun > 0) {
                             setTimeout(poll, nextRun);
@@ -251,7 +251,7 @@
                             poll();
                         }
                     } else {
-                        pingStart();
+                        PING.pingStart();
                     }
 
                 },
@@ -259,65 +259,6 @@
                     //log("e");
                 }
             })
-        }
-
-        var pinging = false;
-        var pingInProgress = false;
-        var doPingInfo = function () {
-            if (!pinging) {
-                return;
-            }
-
-            pingInProgress = true;
-            var startTime = new Date().getTime();
-            var cmd = "iz";
-
-            if(typeof ajax_request !== 'undefined')
-                ajax_request.abort();
-            ajax_request = $.ajax({
-                url: cgiUrl + cmd,
-                type: "GET",
-                dataType: "html",
-                cache: false,
-                timeout: 5000,
-                success: function (data, textStatus, jqXHR) {
-                    $("#resp").html(data);
-                    //log("s");
-                },
-                complete: function () {
-                    pingInProgress = false;
-
-                    var endTime = new Date().getTime();
-                    var latency = endTime - startTime;
-					updateLatency(latency)
-                    if (pinging) {
-                        var nextRun = pingFrequency - latency;
-                        console.log(nextRun);
-                        if (nextRun > 0) {
-                            setTimeout(doPingInfo, nextRun);
-                        } else {
-                            doPingInfo();
-                        }
-                    }
-
-
-                },
-                error: function () {
-                    //log("e");
-                }
-            })
-        };
-
-        function pingStart() {
-            pinging = true;
-            if (pingInProgress) {
-                return;
-            }
-            doPingInfo();
-        }
-
-        function pingStop() {
-            pinging = false;
         }
 
 		var latencyCmdCount = 5;
@@ -353,7 +294,7 @@
 
 			$("#speed").html(speedStr);
 			
-            pingStart();
+            PING.pingStart();
         });
 
     </script>
