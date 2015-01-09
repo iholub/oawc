@@ -1,5 +1,7 @@
 var PING = (function ($) {
-	var pingFrequency = 5000;
+	var pingFrequency = 50;
+    var ajax_request;
+	var timeoutVar;
         var pinging = false;
         var pingInProgress = false;
         var doPingInfo = function () {
@@ -11,8 +13,7 @@ var PING = (function ($) {
             var startTime = new Date().getTime();
             var cmd = "iz";
 
-            if(typeof ajax_request !== 'undefined')
-                ajax_request.abort();
+			//TODO resolve
             ajax_request = $.ajax({
                 url: cgiUrl + cmd,
                 type: "GET",
@@ -32,11 +33,10 @@ var PING = (function ($) {
                     if (pinging) {
                         var nextRun = pingFrequency - latency;
                         //console.log(nextRun);
-                        if (nextRun > 0) {
-                            setTimeout(doPingInfo, nextRun);
-                        } else {
-                            doPingInfo();
+                        if (nextRun < 0) {
+                            nextRun = 0;
                         }
+						timeoutVar = setTimeout(doPingInfo, nextRun);
                     }
 
 
@@ -57,6 +57,14 @@ var PING = (function ($) {
 
         var pingStop = function() {
             pinging = false;
+            if(typeof ajax_request !== 'undefined') {
+                ajax_request.abort();
+				ajax_request = undefined;
+			}
+            if(typeof timeoutVar !== 'undefined') {
+				clearTimeout(timeoutVar);
+				timeoutVar = undefined;
+			}
         }
 
 		return {

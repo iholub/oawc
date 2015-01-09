@@ -182,7 +182,7 @@
                 polling = true;
                 poll();
             }
-            return true;
+            return false;
         };
 
         var doKeyUp = function (e) {
@@ -203,7 +203,7 @@
                 poll();
                 //polling = false;
             }
-            return true;
+            return false;
         };
 
         var poll = function () {
@@ -245,11 +245,10 @@
                     if (polling) {
                         PING.pingStop();
                         var nextRun = frequency - latency;
-                        if (nextRun > 0) {
-                            setTimeout(poll, nextRun);
-                        } else {
-                            poll();
+                        if (nextRun < 0) {
+                            nextRun = 0;
                         }
+						setTimeout(poll, nextRun);
                     } else {
                         PING.pingStart();
                     }
