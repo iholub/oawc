@@ -6,6 +6,8 @@
     <script src="jquery.js"></script>
 	<script src="ping.js"></script>
     <script type="text/javascript">
+		var stopBeforeObstacle = false;
+		var stopBeforeObstacleOld = false;
         var cgiUrl = "cgi-bin/lua.cgi?";
         var ajax_request;
         var cmdInProgress = false;
@@ -133,6 +135,7 @@
                 res += "h0";
             }
 
+			res += "o" + (stopBeforeObstacle ? "1" : "0");
             res += "i";
 
             res += "z";
@@ -211,7 +214,7 @@
                 return;
             }
             var cmd = buildCmd();
-            if (cmd == "iz") {
+            if (cmd == "iz" || cmd == "io0z" || cmd == "io1z") {
                 polling = false;
                 PING.pingStart();
                 return;
@@ -290,6 +293,11 @@
             $('#showInfo').change(function () {
                 showInfo = $(this).is(":checked");
             });
+			
+            $('#stopBeforeObstacle').change(function () {
+                stopBeforeObstacle = $(this).is(":checked");
+            });
+			
 
 			$("#speed").html(speedStr);
 			
@@ -300,6 +308,7 @@
 </head>
 <body>
 <input type="checkbox" id="idlePing"/>Ping while idle
+<input type="checkbox" id="stopBeforeObstacle"/>Stop before obstacle
 <table border="0">
 <tr>
 	<td>cmd:</td><td><span id="cmd"></span></td>
